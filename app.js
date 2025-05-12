@@ -26,7 +26,7 @@ app.use(errorsController.pageNotFound);
 
 const PORT = 3000;
 
-const DB_PATH = 'mongodb+srv://admin:Namanatpug%40@backendcoding.px3ygm2.mongodb.net/airbnb?retryWrites=true&w=majority&appName=BackendCoding';
+const DB_PATH = 'Path From MongoDB';
 
 mongoose.connect(DB_PATH).then(() => {
   console.log("Connected to MongoDB");
