@@ -1,4 +1,4 @@
-exports.getLogin= (req, res, next) => {
+exports.getLogin = (req, res, next) => {
   res.render("auth/login", {
     pageTitle: "Login",
     currentPage: "login",
@@ -6,6 +6,11 @@ exports.getLogin= (req, res, next) => {
   });
 };
 exports.postLogin = (req, res, next) => {
-  res.cookie('isLoggedIn', true);
+  req.session.isLoggedIn = true;
   res.redirect("/");
+};
+exports.getLogout = (req, res, next) => {
+  req.session.destroy(() => {
+    res.redirect("/");
+  });
 };
