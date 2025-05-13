@@ -3,7 +3,7 @@ const home = require('../models/home');
 
 
 exports.getAddHome = (req, res, next) => {
-    res.render('../views/host/add-Home', { pageTitle: 'Add Home to airbnb', currentPage: 'addHome' });
+    res.render('../views/host/add-Home', { pageTitle: 'Add Home to airbnb', currentPage: 'addHome',isLoggedIn: req.isLoggedIn });
 };
 exports.postAddHome = (req, res, next) => {
     const { houseName, price, location, rating, photoUrl } = req.body;
@@ -11,15 +11,15 @@ exports.postAddHome = (req, res, next) => {
     const newHome = new home(houseName, price, location, rating, photoUrl);
     newHome.save();
     registeredHomes.push(req.body);
-    res.render('../views/host/home-Added', { pageTitle: 'Home Added Successfully', currentPage: 'homeAdded' });
+    res.render('../views/host/home-Added', { pageTitle: 'Home Added Successfully', currentPage: 'homeAdded',isLoggedIn: req.isLoggedIn });
 };
 exports.getHomes = (req, res, next) => {
     const registeredHomes = home.fetchAll(registeredHomes => {
-        res.render('../views/store/home-list.ejs', { registeredHomes: registeredHomes, pageTitle: 'airbnb Home', currentPage: 'Home' });
+        res.render('../views/store/home-list.ejs', { registeredHomes: registeredHomes, pageTitle: 'airbnb Home', currentPage: 'Home',isLoggedIn: req.isLoggedIn });
     });
 };
 exports.getBookings = (req, res, next) => {
     const registeredHomes = home.fetchAll(registeredHomes => {
-        res.render('../views/store/bookings.ejs', { registeredHomes: registeredHomes, pageTitle: 'My Bookings', currentPage: 'bookings' });
+        res.render('../views/store/bookings.ejs', { registeredHomes: registeredHomes, pageTitle: 'My Bookings', currentPage: 'bookings',isLoggedIn: req.isLoggedIn });
     });
 };
