@@ -4,9 +4,9 @@ const path = require('path');
 // External Module
 const express = require('express');
 const session = require('express-session');
-const multer = require('multer');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const { default: mongoose } = require('mongoose');
+const multer = require('multer');
 const DB_PATH = "mongodb+srv://admin:Namanatpug%40@backendcoding.px3ygm2.mongodb.net/airbnb?retryWrites=true&w=majority&appName=BackendCoding";
 
 //Local Module
@@ -26,34 +26,43 @@ const store = new MongoDBStore({
   collection: 'sessions'
 });
 
-const randomString = Math.random().toString(36).substring(2, 15);
+const randomString = (length) => {
+  const characters = 'abcdefghijklmnopqrstuvwxyz';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
-    cb(null, randomString + file.originalname);
+    cb(null, randomString(10) + '-' + file.originalname);
   }
 });
 
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+  if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
     cb(null, true);
   } else {
     cb(null, false);
   }
-};
+}
+
 const multerOptions = {
-  storage: storage,
-  fileFilter: fileFilter
+  storage, fileFilter
 };
+
 app.use(express.urlencoded());
-app.use(multer(multerOptions).single('image'));
-app.use(express.static(path.join(rootDir, 'public')));
-app.use('/uploads', express.static(path.join(rootDir, 'uploads')));
-app.use('/host/uploads', express.static(path.join(rootDir, 'uploads')));
-app.use('/home/uploads', express.static(path.join(rootDir, 'uploads')));
+app.use(multer(multerOptions).single('photo'));
+app.use(express.static(path.join(rootDir, 'public')))
+app.use("/uploads", express.static(path.join(rootDir, 'uploads')))
+app.use("/host/uploads", express.static(path.join(rootDir, 'uploads')))
+app.use("/homes/uploads", express.static(path.join(rootDir, 'uploads')))
+
 app.use(session({
   secret: "KnowledgeGate AI with Complete Coding",
   resave: false,
@@ -79,7 +88,7 @@ app.use("/host", hostRouter);
 
 app.use(errorsController.pageNotFound);
 
-const PORT = 3000;
+const PORT = 3003;
 
 mongoose.connect(DB_PATH).then(() => {
   console.log('Connected to Mongo');
