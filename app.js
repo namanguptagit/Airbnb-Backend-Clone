@@ -4,7 +4,9 @@ const path = require('path');
 // External Module
 const express = require('express');
 const session = require('express-session');
+const multer = require('multer');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const { default: mongoose } = require('mongoose');
 const DB_PATH = "mongodb+srv://admin:Namanatpug%40@backendcoding.px3ygm2.mongodb.net/airbnb?retryWrites=true&w=majority&appName=BackendCoding";
 
 //Local Module
@@ -13,7 +15,6 @@ const hostRouter = require("./routes/hostRouter")
 const authRouter = require("./routes/authRouter")
 const rootDir = require("./utils/pathUtil");
 const errorsController = require("./controllers/errors");
-const { default: mongoose } = require('mongoose');
 
 const app = express();
 
@@ -25,7 +26,34 @@ const store = new MongoDBStore({
   collection: 'sessions'
 });
 
+const randomString = Math.random().toString(36).substring(2, 15);
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, randomString + file.originalname);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+const multerOptions = {
+  storage: storage,
+  fileFilter: fileFilter
+};
 app.use(express.urlencoded());
+app.use(multer(multerOptions).single('image'));
+app.use(express.static(path.join(rootDir, 'public')));
+app.use('/uploads', express.static(path.join(rootDir, 'uploads')));
+app.use('/host/uploads', express.static(path.join(rootDir, 'uploads')));
+app.use('/home/uploads', express.static(path.join(rootDir, 'uploads')));
 app.use(session({
   secret: "KnowledgeGate AI with Complete Coding",
   resave: false,
@@ -48,8 +76,6 @@ app.use("/host", (req, res, next) => {
   }
 });
 app.use("/host", hostRouter);
-
-app.use(express.static(path.join(rootDir, 'public')))
 
 app.use(errorsController.pageNotFound);
 
